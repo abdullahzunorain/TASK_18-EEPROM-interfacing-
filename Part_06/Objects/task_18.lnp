@@ -1,0 +1,4 @@
+".\Objects\lcd.obj",
+".\Objects\main_read_write_EEPROM.obj" 
+TO ".\Objects\task_18" 
+PRINT(".\Listings\task_18.m51") RAMSIZE(256) 

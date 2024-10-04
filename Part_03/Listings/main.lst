@@ -1,0 +1,194 @@
+C51 COMPILER V9.60.7.0   MAIN                                                              09/23/2024 15:06:52 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN .\Objects\main.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE main.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listings\main
+                    -.lst) TABS(2) OBJECT(.\Objects\main.obj)
+
+line level    source
+
+   1          #include<reg51.h>
+   2          #include "LCD.h"
+   3          #include<intrins.h>   //For using [_nop_()]
+   4          sbit sda=P2^0;
+   5          sbit scl=P2^1;
+   6          
+   7          bit ack;
+   8          char i=0,ii=0, j=0,jj=0,k,counter=0x70;
+   9          unsigned char read_var=0x01;
+  10          unsigned char message[10]={0x3F,0x06,0x5B,0x4F,0x66,0x6D,0x7D,0x07,0x7F,0x6F};
+  11          unsigned char values[8];
+  12          
+  13          void display_num_7seg(unsigned char num);
+  14          
+  15          void aknowledge()   //acknowledge condition
+  16          {
+  17   1        scl=1;
+  18   1        _nop_();
+  19   1        _nop_();
+  20   1        scl=0;
+  21   1      } 
+  22          void start()    //start condition
+  23          {
+  24   1        sda=1;
+  25   1        scl=1;
+  26   1        _nop_();         //No operation
+  27   1        _nop_();
+  28   1        sda=0;
+  29   1        scl=0;
+  30   1      }
+  31          void stop()     //stop condition
+  32          {
+  33   1        sda=0;
+  34   1        scl=1;
+  35   1        _nop_();
+  36   1        _nop_(); 
+  37   1        sda=1;
+  38   1        scl=0;
+  39   1      }
+  40          void send_byte(unsigned char value) //send byte serially
+  41          { 
+  42   1        
+  43   1        for(i=0;i<8;i++)
+  44   1        {
+  45   2          sda=value/128;      //extracting MSB
+  46   2          value=value<<1;     //shiftng left
+  47   2          scl=1;
+  48   2          _nop_();
+  49   2          _nop_();
+  50   2          scl=0;
+  51   2        }
+  52   1         ack=sda;         //reading acknowledge
+  53   1         sda=0;
+  54   1      }
+C51 COMPILER V9.60.7.0   MAIN                                                              09/23/2024 15:06:52 PAGE 2   
+
+  55          unsigned char read_byte()     //reading from EEPROM serially
+  56          {
+  57   1        unsigned char reead=0x00;
+  58   1        sda=1;
+  59   1        
+  60   1        for(i=0;i<8;i++)
+  61   1        {
+  62   2          reead=reead<<1;
+  63   2          scl=1;
+  64   2          _nop_();
+  65   2          _nop_();
+  66   2          if(sda==1)
+  67   2            reead++;
+  68   2          scl=0;
+  69   2        }
+  70   1        sda=0;
+  71   1        return reead;       //Returns 8 bit data here
+  72   1      }   
+  73          void save()         //save in EEPROM
+  74          {
+  75   1        start();
+  76   1        send_byte(0xA0);            //device address
+  77   1        aknowledge();
+  78   1        send_byte(0);           //word address
+  79   1        aknowledge();
+  80   1        send_byte(counter);             //send data
+  81   1        aknowledge();
+  82   1        
+  83   1        stop();
+  84   1      delay(5); 
+  85   1      }
+  86          unsigned char Read()
+  87          {
+  88   1        unsigned char Data_var;
+  89   1        start();
+  90   1        send_byte(0xA0);
+  91   1        aknowledge();
+  92   1        send_byte(0);
+  93   1        aknowledge();
+  94   1        start();
+  95   1        send_byte(0xA1);           //device address
+  96   1        aknowledge();
+  97   1        Data_var=read_byte();
+  98   1        aknowledge();
+  99   1        
+ 100   1        stop();
+ 101   1        delay(5);
+ 102   1        return Data_var;
+ 103   1      }
+ 104          void timer_init()
+ 105          {
+ 106   1        TMOD=0x01;
+ 107   1        TH0=0xF7;
+ 108   1        TL0=0x15;
+ 109   1        TR0=1;
+ 110   1        IE=0x80;
+ 111   1        ET0=1;
+ 112   1        TF0=1;
+ 113   1      }
+ 114          void main()
+ 115          {
+ 116   1        lcd_init();
+C51 COMPILER V9.60.7.0   MAIN                                                              09/23/2024 15:06:52 PAGE 3   
+
+ 117   1        timer_init();
+ 118   1        counter=Read();
+ 119   1        display_num_7seg(counter);
+ 120   1        while(1)
+ 121   1        {
+ 122   2          if(read_var==0x01)
+ 123   2          {
+ 124   3            save();
+ 125   3            
+ 126   3            delay(5);
+ 127   3            display_num_7seg(counter);
+ 128   3            read_var=0x00;
+ 129   3          }
+ 130   2        }
+ 131   1      
+ 132   1      }
+ 133          
+ 134          void display_num_7seg(unsigned char num)
+ 135          {
+ 136   1        for(k=2; k>=0; k--)
+ 137   1        {
+ 138   2          values[k]=message[num%10];
+ 139   2          num=num/10;
+ 140   2        }
+ 141   1      }
+ 142          
+ 143          void timer1_interrupt(void) interrupt 1
+ 144          {
+ 145   1        TH0=0xF0;
+ 146   1        TL0=0x15;
+ 147   1        P2 |=0x1C;
+ 148   1        P2 &=~(jj<<2);
+ 149   1        P0=values[jj];
+ 150   1        jj++;
+ 151   1        if(jj==3)
+ 152   1        {
+ 153   2          jj=0; 
+ 154   2          j++;
+ 155   2          
+ 156   2        }
+ 157   1        if(j==100)
+ 158   1        {
+ 159   2          counter++;
+ 160   2          j=0;
+ 161   2          read_var=0x01;
+ 162   2        }
+ 163   1      }
+ 164          
+ 165          
+ 166          
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    334    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =     25       1
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =      1    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

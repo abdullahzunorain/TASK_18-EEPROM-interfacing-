@@ -1,0 +1,104 @@
+C51 COMPILER V9.60.7.0   LCD                                                               09/23/2024 15:06:52 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE LCD
+OBJECT MODULE PLACED IN .\Objects\lcd.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE lcd.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listings\lcd.l
+                    -st) TABS(2) OBJECT(.\Objects\lcd.obj)
+
+line level    source
+
+   1          
+   2          /*
+   3          task_18: part_03
+   4          
+   5          Implement a counter of one second (8 bit) and save the value of the counter in EEPROM 
+   6          after each second. Show the count on seven segment displays. On startup, load the value 
+   7          of the counter from EEPROM. Reset the board and see if the counter value remains 
+   8          preserved between resets. An unwritten memory location in EEPROM has a value of 0xFF 
+   9          or 255 which you can use to check if it is a new board or if the value is legitimate. 
+  10          */
+  11          
+  12          #include <reg51.h>
+  13          #include "LCD.h"
+  14          #include <string.h>
+  15          
+  16          #define lcd_data P0
+  17          sbit RW=P2^5;
+  18          sbit RS=P2^6;
+  19          sbit EN=P2^7;
+  20          
+  21          void lcd_init()
+  22          {
+  23   1        lcd_command(0x38);
+  24   1        lcd_command(0x0C);
+  25   1        lcd_command(0x01);
+  26   1        lcd_command(0x80);
+  27   1      }
+  28          
+  29          void lcd_command(unsigned char cmd)
+  30          {
+  31   1        lcd_data=cmd;
+  32   1        RW=0;
+  33   1        RS=0;
+  34   1        EN=1;
+  35   1        delay(10);
+  36   1        EN=0;
+  37   1        delay(10);
+  38   1      }
+  39          void lcd_char(unsigned char dat)
+  40          {
+  41   1        lcd_data=dat;
+  42   1        RW=0;
+  43   1        RS=1;
+  44   1        EN=1;
+  45   1        delay(10);
+  46   1        EN=0;
+  47   1        delay(10);
+  48   1      }
+  49          void lcd_string(unsigned char *str)
+  50          {
+  51   1        int i;
+  52   1        for(i=0; str[i]!=0; i++)
+  53   1        {
+  54   2          lcd_char(str[i]);
+C51 COMPILER V9.60.7.0   LCD                                                               09/23/2024 15:06:52 PAGE 2   
+
+  55   2        }
+  56   1        
+  57   1      }
+  58          void lcd_set_cursor(unsigned char row, unsigned char col)
+  59          {
+  60   1        unsigned char position;
+  61   1        if(row==0)
+  62   1        {
+  63   2          position=0x80+col;
+  64   2        }
+  65   1        else
+  66   1        {
+  67   2          position=0xC0+col;
+  68   2        }
+  69   1        lcd_command(position);
+  70   1      }
+  71          
+  72          void delay (unsigned int time)
+  73          {
+  74   1        unsigned int i,j;
+  75   1        for(i=0; i<time; i++)
+  76   1        for(j=0; j<112; j++);
+  77   1        
+  78   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    157    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----       6
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

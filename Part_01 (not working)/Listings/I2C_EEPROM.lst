@@ -1,0 +1,204 @@
+C51 COMPILER V9.60.7.0   I2C_EEPROM                                                        09/09/2024 12:26:30 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE I2C_EEPROM
+OBJECT MODULE PLACED IN .\Objects\I2C_EEPROM.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE I2C_EEPROM.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listing
+                    -s\I2C_EEPROM.lst) TABS(2) OBJECT(.\Objects\I2C_EEPROM.obj)
+
+line level    source
+
+   1          #include <xc.h>
+*** WARNING C318 IN LINE 1 OF I2C_EEPROM.c: can't open file 'xc.h'
+   2          #include "I2C_EEPROM.h"
+*** ERROR C141 IN LINE 15 OF I2C_EEPROM.h: syntax error near ')', expected '<id>'
+*** ERROR C141 IN LINE 16 OF I2C_EEPROM.h: syntax error near ',', expected '<id>'
+*** ERROR C141 IN LINE 18 OF I2C_EEPROM.h: syntax error near ',', expected '<id>'
+   3          #define _XTAL_FREQ 16000000
+   4          #define EEPROM_Address_R 0xA1
+   5          #define EEPROM_Address_W 0xA0
+   6          //---------------[ I2C Routines ]-------------------
+   7          //--------------------------------------------------
+   8          void I2C_Master_Init(const unsigned long baud)
+   9          {
+  10   1        SSPCON = 0b00101000;
+*** ERROR C202 IN LINE 10 OF I2C_EEPROM.c: 'SSPCON': undefined identifier
+*** ERROR C251 IN LINE 10 OF I2C_EEPROM.c: illegal octal digit
+  11   1        SSPCON2 = 0;
+*** ERROR C202 IN LINE 11 OF I2C_EEPROM.c: 'SSPCON2': undefined identifier
+  12   1        SSPADD = (_XTAL_FREQ/(4*baud))-1;
+*** ERROR C202 IN LINE 12 OF I2C_EEPROM.c: 'SSPADD': undefined identifier
+  13   1        SSPSTAT = 0;
+*** ERROR C202 IN LINE 13 OF I2C_EEPROM.c: 'SSPSTAT': undefined identifier
+  14   1        TRISC3 = 1;
+*** ERROR C202 IN LINE 14 OF I2C_EEPROM.c: 'TRISC3': undefined identifier
+  15   1        TRISC4 = 1;
+*** ERROR C202 IN LINE 15 OF I2C_EEPROM.c: 'TRISC4': undefined identifier
+  16   1      }
+  17          void I2C_Master_Wait()
+  18          {
+  19   1        while ((SSPSTAT & 0x04) || (SSPCON2 & 0x1F));
+*** ERROR C202 IN LINE 19 OF I2C_EEPROM.c: 'SSPSTAT': undefined identifier
+  20   1      }
+  21          void I2C_Master_Start()
+  22          {
+  23   1        I2C_Master_Wait();
+  24   1        SEN = 1;
+*** ERROR C202 IN LINE 24 OF I2C_EEPROM.c: 'SEN': undefined identifier
+  25   1      }
+  26          void I2C_Master_RepeatedStart()
+  27          {
+  28   1        I2C_Master_Wait();
+  29   1        RSEN = 1;
+*** ERROR C202 IN LINE 29 OF I2C_EEPROM.c: 'RSEN': undefined identifier
+  30   1      }
+  31          void I2C_Master_Stop()
+  32          {
+  33   1        I2C_Master_Wait();
+  34   1        PEN = 1;
+*** ERROR C202 IN LINE 34 OF I2C_EEPROM.c: 'PEN': undefined identifier
+  35   1      }
+  36          unsigned char I2C_Master_Write(unsigned char data)
+*** ERROR C141 IN LINE 36 OF I2C_EEPROM.c: syntax error near ')', expected '<id>'
+  37          {
+*** ERROR C236 IN LINE 37 OF I2C_EEPROM.c: '_I2C_Master_Write': different length of parameter lists
+C51 COMPILER V9.60.7.0   I2C_EEPROM                                                        09/09/2024 12:26:30 PAGE 2   
+
+  38   1        I2C_Master_Wait();
+  39   1        SSPBUF = data;
+*** ERROR C202 IN LINE 39 OF I2C_EEPROM.c: 'SSPBUF': undefined identifier
+*** ERROR C141 IN LINE 39 OF I2C_EEPROM.c: syntax error near 'data', expected 'sizeof'
+  40   1        while(!SSPIF); // Wait Until Completion
+  41   1        SSPIF = 0;
+*** ERROR C202 IN LINE 41 OF I2C_EEPROM.c: 'SSPIF': undefined identifier
+  42   1        return ACKSTAT;
+*** ERROR C202 IN LINE 42 OF I2C_EEPROM.c: 'ACKSTAT': undefined identifier
+  43   1      }
+  44          unsigned char I2C_Read_Byte(void)
+  45          {
+  46   1        //---[ Receive & Return A Byte ]---
+  47   1        I2C_Master_Wait();
+  48   1        RCEN = 1; // Enable & Start Reception
+*** ERROR C202 IN LINE 48 OF I2C_EEPROM.c: 'RCEN': undefined identifier
+  49   1        while(!SSPIF); // Wait Until Completion
+*** ERROR C202 IN LINE 49 OF I2C_EEPROM.c: 'SSPIF': undefined identifier
+  50   1        SSPIF = 0; // Clear The Interrupt Flag Bit
+*** ERROR C202 IN LINE 50 OF I2C_EEPROM.c: 'SSPIF': undefined identifier
+  51   1        I2C_Master_Wait();
+  52   1        return SSPBUF; // Return The Received Byte
+*** ERROR C202 IN LINE 52 OF I2C_EEPROM.c: 'SSPBUF': undefined identifier
+  53   1      }
+  54          void I2C_ACK(void)
+  55          {
+  56   1        ACKDT = 0; // 0 -> ACK
+*** ERROR C202 IN LINE 56 OF I2C_EEPROM.c: 'ACKDT': undefined identifier
+  57   1        I2C_Master_Wait();
+  58   1        ACKEN = 1; // Send ACK
+*** ERROR C202 IN LINE 58 OF I2C_EEPROM.c: 'ACKEN': undefined identifier
+  59   1      }
+  60          void I2C_NACK(void)
+  61          {
+  62   1        ACKDT = 1; // 1 -> NACK
+*** ERROR C202 IN LINE 62 OF I2C_EEPROM.c: 'ACKDT': undefined identifier
+  63   1        I2C_Master_Wait();
+  64   1        ACKEN = 1; // Send NACK
+*** ERROR C202 IN LINE 64 OF I2C_EEPROM.c: 'ACKEN': undefined identifier
+  65   1      }
+  66          //======================================================
+  67           
+  68          //---------------[ I2C EEPROM Routines ]----------------
+  69          //------------------------------------------------------
+  70          //-----[ Write Operations ]-----
+  71          // EEPROM Write Byte
+  72          void EEPROM_Write(unsigned int add, unsigned char data)
+*** ERROR C141 IN LINE 72 OF I2C_EEPROM.c: syntax error near ')', expected '<id>'
+  73          {
+  74   1        I2C_Master_Start();
+  75   1       
+  76   1        // Wait Until EEPROM Is IDLE
+  77   1        while(I2C_Master_Write(EEPROM_Address_W))
+  78   1          I2C_Master_RepeatedStart();
+  79   1       
+  80   1        I2C_Master_Write(add>>8);
+  81   1        I2C_Master_Write((unsigned char)add);
+  82   1        I2C_Master_Write(data);
+*** ERROR C141 IN LINE 82 OF I2C_EEPROM.c: syntax error near 'data', expected 'sizeof'
+  83   1        I2C_Master_Stop();
+  84   1      }
+  85          // EEPROM Write Page
+C51 COMPILER V9.60.7.0   I2C_EEPROM                                                        09/09/2024 12:26:30 PAGE 3   
+
+  86          void EEPROM_Write_Page(unsigned int add, unsigned char* data, unsigned char len)
+*** ERROR C141 IN LINE 86 OF I2C_EEPROM.c: syntax error near ',', expected '<id>'
+  87          {
+  88   1        I2C_Master_Start();
+  89   1       
+  90   1        // Wait Until EEPROM Is IDLE
+  91   1        while(I2C_Master_Write(EEPROM_Address_W))
+  92   1          I2C_Master_RepeatedStart();
+  93   1       
+  94   1        I2C_Master_Write(add>>8);
+  95   1        I2C_Master_Write((unsigned char)add);
+  96   1        for(unsigned int i=0; i<len; i++)
+*** ERROR C141 IN LINE 96 OF I2C_EEPROM.c: syntax error near 'unsigned', expected 'sizeof'
+*** ERROR C202 IN LINE 96 OF I2C_EEPROM.c: 'i': undefined identifier
+*** ERROR C202 IN LINE 96 OF I2C_EEPROM.c: 'i': undefined identifier
+*** ERROR C202 IN LINE 96 OF I2C_EEPROM.c: 'i': undefined identifier
+*** ERROR C141 IN LINE 96 OF I2C_EEPROM.c: syntax error near ')', expected ';'
+  97   1          I2C_Master_Write(data[i]);
+  98   1        I2C_Master_Stop();
+  99   1      }
+ 100          //-----------------------------
+ 101          //-----[ Read Operations ]-----
+ 102          //---[ Byte Read ]---
+ 103          unsigned char EEPROM_Read(unsigned int add)
+ 104          {
+ 105   1        unsigned char Data;
+ 106   1        I2C_Master_Start();
+ 107   1       
+ 108   1        // Wait Until EEPROM Is IDLE
+ 109   1        while(I2C_Master_Write(EEPROM_Address_W))
+ 110   1          I2C_Master_RepeatedStart();
+ 111   1       
+ 112   1        I2C_Master_Write(add>>8);
+ 113   1        I2C_Master_Write((unsigned char)add);
+ 114   1        I2C_Master_RepeatedStart();
+ 115   1       
+ 116   1        I2C_Master_Write(EEPROM_Address_R);
+ 117   1        Data = I2C_Read_Byte();
+ 118   1        I2C_NACK();
+ 119   1        I2C_Master_Stop();
+ 120   1       
+ 121   1        return Data;
+ 122   1      }
+ 123          //---[ Sequential Read ]---
+ 124          void EEPROM_Read_Page(unsigned int add, unsigned char* data, unsigned int len)
+*** ERROR C141 IN LINE 124 OF I2C_EEPROM.c: syntax error near ',', expected '<id>'
+ 125          {
+ 126   1        I2C_Master_Start();
+ 127   1       
+ 128   1        // Wait Until EEPROM Is IDLE
+ 129   1        while(I2C_Master_Write(EEPROM_Address_W))
+ 130   1          I2C_Master_RepeatedStart();
+ 131   1       
+ 132   1        I2C_Master_Write(add>>8);
+ 133   1        I2C_Master_Write((unsigned char)add);
+ 134   1        I2C_Master_RepeatedStart();
+ 135   1        I2C_Master_Write(EEPROM_Address_R);
+ 136   1        for(unsigned int i=0; i<len; i++)
+*** ERROR C141 IN LINE 136 OF I2C_EEPROM.c: syntax error near 'unsigned', expected 'sizeof'
+*** ERROR C202 IN LINE 136 OF I2C_EEPROM.c: 'i': undefined identifier
+*** ERROR C202 IN LINE 136 OF I2C_EEPROM.c: 'i': undefined identifier
+*** ERROR C202 IN LINE 136 OF I2C_EEPROM.c: 'i': undefined identifier
+C51 COMPILER V9.60.7.0   I2C_EEPROM                                                        09/09/2024 12:26:30 PAGE 4   
+
+*** ERROR C141 IN LINE 136 OF I2C_EEPROM.c: syntax error near ')', expected ';'
+ 137   1        {
+ 138   2          data[i] = I2C_Read_Byte();
+*** ERROR C141 IN LINE 138 OF I2C_EEPROM.c: syntax error near '[', expected 'hdata'
+ 139   2          I2C_ACK();
+ 140   2        }
+ 141   1        I2C_Master_Stop();
+ 142   1      }
+
+C51 COMPILATION COMPLETE.  1 WARNING(S),  43 ERROR(S)

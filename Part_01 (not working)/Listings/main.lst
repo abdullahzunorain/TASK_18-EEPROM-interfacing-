@@ -1,0 +1,61 @@
+C51 COMPILER V9.60.7.0   MAIN                                                              09/09/2024 12:26:30 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN .\Objects\main.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE main.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listings\main
+                    -.lst) TABS(2) OBJECT(.\Objects\main.obj)
+
+line level    source
+
+   1          /*
+   2          * File: main.c
+   3          * Project: I2C EEPROM Interfacing
+   4          * Author: Khaled Magdy
+   5          * Visit @ https://deepbluembedded.com
+   6          */
+   7          #include <xc.h>
+*** WARNING C318 IN LINE 7 OF main.c: can't open file 'xc.h'
+   8          #include "config.h"
+*** WARNING C318 IN LINE 8 OF main.c: can't open file 'config.h'
+   9          #include "I2C_EEPROM.h"
+*** ERROR C141 IN LINE 15 OF I2C_EEPROM.h: syntax error near ')', expected '<id>'
+*** ERROR C141 IN LINE 16 OF I2C_EEPROM.h: syntax error near ',', expected '<id>'
+*** ERROR C141 IN LINE 18 OF I2C_EEPROM.h: syntax error near ',', expected '<id>'
+  10          #define _XTAL_FREQ 16000000
+  11           
+  12          void main(void) {
+  13   1       
+  14   1        I2C_Master_Init(100000);
+  15   1        unsigned int Address = 0x0020; // Some Random Address
+*** ERROR C141 IN LINE 15 OF main.c: syntax error near 'unsigned', expected '__asm'
+*** ERROR C202 IN LINE 15 OF main.c: 'Address': undefined identifier
+  16   1        unsigned char Data = 0x04;     // Some Random Data To Write
+*** ERROR C141 IN LINE 16 OF main.c: syntax error near 'unsigned', expected '__asm'
+*** ERROR C202 IN LINE 16 OF main.c: 'Data': undefined identifier
+  17   1       
+  18   1        EEPROM_Write(Address++, Data++); // Write 0x04 @ 0x0020
+*** ERROR C202 IN LINE 18 OF main.c: 'Address': undefined identifier
+  19   1        EEPROM_Write(Address++, Data++); // Write 0x05 @ 0x0021
+*** ERROR C202 IN LINE 19 OF main.c: 'Address': undefined identifier
+  20   1        EEPROM_Write(Address, Data);     // Write 0x06 @ 0x0022
+*** ERROR C202 IN LINE 20 OF main.c: 'Address': undefined identifier
+  21   1        __delay_ms(10); // Wait tWR=10ms For Write To Complete
+  22   1       
+  23   1        Address = 0x0020; // Point To First Byte Location
+  24   1        TRISD = 0x00;
+  25   1        PORTD = EEPROM_Read(Address++); // Should Read 0x04
+  26   1        __delay_ms(1000);
+  27   1        PORTD = EEPROM_Read(Address++); // Should Read 0x05
+  28   1        __delay_ms(1000);
+  29   1        PORTD = EEPROM_Read(Address);   // Should Read 0x06
+  30   1        __delay_ms(1000);
+  31   1       
+  32   1        while(1)
+  33   1        {
+  34   2           // Stay IDLE .. DO Nothing!
+  35   2        }
+  36   1        return;
+  37   1      }
+
+C51 COMPILATION COMPLETE.  2 WARNING(S),  10 ERROR(S)

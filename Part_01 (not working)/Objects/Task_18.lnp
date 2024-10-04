@@ -1,0 +1,3 @@
+".\Objects\main.obj" 
+TO ".\Objects\Task_18" 
+PRINT(".\Listings\Task_18.m51") RAMSIZE(256) 
