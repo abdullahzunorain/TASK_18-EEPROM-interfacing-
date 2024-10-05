@@ -1,6 +1,6 @@
 # Task 18: EEPROM Interfacing with 24C02
 
-!(eeprom.jpg)
+![](eeprom.jpg)
 
 This project demonstrates how to interface with the 24C02 EEPROM using a software-based I2C driver. The task involves reading and writing data to/from the EEPROM, implementing a 1-second counter, and preserving the counter value across system resets.
 
